@@ -1,0 +1,41 @@
+** Problem:
+Given n integers and a value K, we want to find the indices of the pair of numbers such that the pair
+adds up to the given value K and return −1, −1 if no such pair exists.
+
+** Explaining the implemented solution
+
+=Addends.find= takes a list as its first argument and an integer, =k=, as its second argument. It returns a list of tuples like =[{0, 15}, {1, 14}]= if it was able to find a pair of integers that sums up to =k= or else it returns =-1=. The numbers in the tuples are the index of desired integers in the original list. =Addends.find= also checks to see if all the elements of the given list are appropriate otherwise it raises an error. For considered edge cases please take a look at =addends_finder_test.exs=.
+
+A few example
+
+#+BEGIN_SRC shell
+iex(2)> Addends.find([1, 2, 3, 9], 8)
+-1
+#+END_SRC
+
+#+BEGIN_SRC shell
+iex(3)> Addends.find([1, 2, 4, 4], 8)
+[{2, 3}]
+#+END_SRC
+
+#+BEGIN_SRC shell
+iex(4)> Addends.find([4, 2, 1, 4], 8)
+[{0, 3}]
+#+END_SRC
+
+#+BEGIN_SRC shell
+# This takes around 4s in my 7 years old laptop (including the creation of list)
+iex(5)> list = 0..10_000_000 |> Enum.into([])
+iex(6)> Addends.find(list, 15)
+[{0, 15}, {1, 14}, {2, 13}, {3, 12}, {4, 11}, {5, 10}, {6, 9}, {7, 8}]
+#+END_SRC
+
+#+BEGIN_SRC shell
+iex(10)> Addends.find([4, -12, 1, 4], 8)
+** (ArgumentError) Nah! the given list should not have any negative integer
+             addends_finder.exs:31: Addends.do_filter/2
+    (elixir) lib/enum.ex:814: anonymous fn/3 in Enum.filter/2
+    (elixir) lib/enum.ex:1755: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (elixir) lib/enum.ex:814: Enum.filter/2
+             addends_finder.exs:13: Addends.find/2
+#+END_SRC
