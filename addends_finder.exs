@@ -10,6 +10,7 @@ defmodule Addends do
   def find(list, k) do
     list
     |> Enum.with_index
+    # Since all the intergers are positive, omitting those that are > k saves us some unnecessary computation
     |> Enum.filter(&do_filter(&1, k))
     |> do_find(k)
     |> Enum.reverse
