@@ -1,3 +1,5 @@
+Code.load_file("helpers.exs", __DIR__)
+
 defmodule Addends do
   @doc """
   Given n integers and a value K, it finds the indices of the pair of numbers such that the pair
@@ -15,7 +17,7 @@ defmodule Addends do
     |> Enum.reduce_while({0, []}, &index_and_filter_sorted(&1, &2, k))
     |> (fn {_index, list} -> list end).()
     |> Enum.reverse
-    |> do_find(k)
+    |> Helpers.do_find(k)
     |> (fn [] -> -1; result -> result end).()
   end
 
@@ -23,36 +25,12 @@ defmodule Addends do
     list
     |> Enum.reduce({0, []}, &index_and_filter(&1, &2, k))
     |> (fn {_total_number_of_elements_in_original_list, list} -> list end).()
-    |> Enum.sort_by(fn {item, _index} -> item end) # sort the list, it's costly but we benifit furthre down the road.
-    |> do_find(k)
+    |> Enum.sort_by(fn {item, _index} -> item end) # sort the list, it's costly but we benefit furthre down the road.
+    |> Helpers.do_find(k)
     |> (fn [] -> -1; result -> result end).()
   end
 
-  defp do_find(list, k, acc \\ [])
-  defp do_find([], _k, acc), do: acc |> Enum.reverse
-  defp do_find([head | tail], k, acc) do
-    {value_of_head, index_of_head} = head
-    cond do
-      value_of_head > k ->  Enum.reverse(acc) # There's no point in continuing if first number is bigger than k
-
-      true              ->
-        acc = tail |> Enum.reduce(acc, &do_reduce(&1, &2, k, head))
-        do_find(tail, k, acc)
-    end
-  end
-
-  defp do_reduce(current, accumulator, k, head) do
-    {value_of_current, index_of_current} = current
-    {value_of_head, index_of_head} = head
-
-    sum = value_of_current + value_of_head
-    cond do
-      # value_of_head > k -> {:halt, accumulator}
-      sum == k          -> [{index_of_head, index_of_current} | accumulator]
-      true              -> accumulator
-    end
-  end
-
+  #############################################
   defp index_and_filter(x, {index, acc}, k) do
     error_maybe?(x)
     cond do

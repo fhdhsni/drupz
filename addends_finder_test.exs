@@ -6,9 +6,18 @@ ExUnit.configure exclude: :pending, trace: true
 defmodule AddendsTest do
   use ExUnit.Case
 
+  def make_a_weird_list(i \\ 0, acc \\ [])
+    def make_a_weird_list(i, acc) do
+    cond do
+      i == 10_000_000 -> acc
+      true            -> make_a_weird_list(i + 1, [1 | acc])
+    end
+  end
+
   setup_all do
-    ten_millions = 0..10_000_000 |> Enum.into([])
-    {:ok, variable: ten_millions}
+      ten_millions = 0..10_000_000 |> Enum.into([])
+      ten_million_ones = make_a_weird_list()
+      {:ok, variable: ten_millions, ones: ten_million_ones}
   end
 
   # @tag :pending
@@ -48,21 +57,17 @@ defmodule AddendsTest do
 
   # @tag :pending
   test "10 million items, assuming *unsorted*", %{variable: ten_millions} do
-    assert Addends.find(ten_millions, 15) == [{0, 15}, {1, 14}, {2, 13}, {3, 12}, {4, 11}, {5, 10}, {6, 9}, {7, 8}]
+    assert Addends.find(ten_millions, 15) == [{7, 8}, {6, 9}, {5, 10}, {4, 11}, {3, 12}, {2, 13}, {1, 14}, {0, 15}]
   end
 
   # @tag :pending
   test "10 million items but guaranteed to be *sorted*", %{variable: ten_millions} do
-    assert Addends.find(ten_millions, 15, :sorted) == [{0, 15}, {1, 14}, {2, 13}, {3, 12}, {4, 11}, {5, 10}, {6, 9}, {7, 8}]
+    assert Addends.find(ten_millions, 15, :sorted) == [{7, 8}, {6, 9}, {5, 10}, {4, 11}, {3, 12}, {2, 13}, {1, 14}, {0, 15}]
   end
 
   # @tag :pending
-  test "evil", %{variable: ten_millions} do
-    # only for measuring speed
-    # Currently it gets completed in 1.8s in my system. Before this commit it was more than 3s.
-    # This commit slows the process in some situtions (but it's negligible) but it's beneficial when k is a large number.
-    Addends.find(ten_millions, 10_000, :sorted) 
-    assert true
+  test "proof of dumbness", %{ones: ten_million_ones} do
+    assert Addends.find(ten_million_ones, 9, :sorted) == -1
   end
 
 end
