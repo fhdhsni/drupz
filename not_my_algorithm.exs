@@ -1,27 +1,27 @@
 defmodule Addends do
   def find(list, k) do
-    {_index, hash} = list |> Enum.reduce({0, %{}}, &do_reduce(&1, &2, k))
+    {_index, map} = list |> Enum.reduce({0, %{}}, &do_reduce(&1, &2, k))
 
-    do_find(list, hash, k)
+    do_find(list, map, k)
     |> Enum.uniq
     |> (fn [] -> -1; result -> result end).()
   end
 
-  defp do_reduce(item, {current_index, hash}, k) do
+  defp do_reduce(item, {current_index, map}, k) do
     cond do
-      item > k -> {current_index + 1, hash} # skip the item
+      item > k -> {current_index + 1, map} # skip the item
 
       true     ->
-        hash = Map.put(hash, item, current_index)
+        map = Map.put(map, item, current_index)
         
-        {current_index + 1, hash}    
+        {current_index + 1, map}    
     end
   end
 
-  defp do_find(list, hash, k, result \\ []) do
+  defp do_find(list, map, k, result \\ []) do
 
     reduce = fn item, {i, accumulator} ->
-      found = Map.get(hash, k - item)
+      found = Map.get(map, k - item)
       cond do
         found != nil and found != i ->
           pair = if i > found, do: {found, i}, else: {i, found}
